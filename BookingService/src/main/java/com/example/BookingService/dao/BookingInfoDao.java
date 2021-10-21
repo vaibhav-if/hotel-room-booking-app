@@ -1,9 +1,9 @@
-package com.example.BookingService.repository;
+package com.example.BookingService.dao;
 
 import com.example.BookingService.entity.BookingInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BookingRepository extends JpaRepository<BookingInfoEntity, Integer> {
+public interface BookingInfoDao extends JpaRepository<BookingInfoEntity, Integer> {
 }

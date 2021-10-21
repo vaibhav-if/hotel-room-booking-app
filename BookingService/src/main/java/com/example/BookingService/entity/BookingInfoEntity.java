@@ -1,8 +1,7 @@
 package com.example.BookingService.entity;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "booking")
@@ -10,36 +9,38 @@ public class BookingInfoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int bookingId;
+    @Column(name = "bookingId")
+    private int id;
 
     @Column(nullable = true)
-    private Date fromDate;
+    private LocalDateTime fromDate;
 
     @Column(nullable = true)
-    private Date toDate;
+    private LocalDateTime toDate;
 
-    @Column(nullable = true, unique = true)
+    //todo 2: to keep aadhaar unique or not?
+    @Column(nullable = true)
     private String aadharNumber;
 
     private int numOfRooms;
 
-    private List<String> roomNumbers;
+    private String roomNumbers;
 
     @Column(nullable = false, columnDefinition = "integer default 1000")
-    private int roomPrice;
+    private int roomPrice = 1000;
 
     @Column(columnDefinition = "integer default 0")
     private int transactionId;
 
     @Column(nullable = true)
-    private Date bookedOn;
+    private LocalDateTime bookedOn;
 
     public BookingInfoEntity() {
 
     }
 
-    public BookingInfoEntity(int bookingId, Date fromDate, Date toDate, String aadharNumber, int numOfRooms, List<String> roomNumbers, int roomPrice, int transactionId, Date bookedOn) {
-        this.bookingId = bookingId;
+    public BookingInfoEntity(int id, LocalDateTime fromDate, LocalDateTime toDate, String aadharNumber, int numOfRooms, String roomNumbers, int roomPrice, int transactionId, LocalDateTime bookedOn) {
+        this.id = id;
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.aadharNumber = aadharNumber;
@@ -50,27 +51,27 @@ public class BookingInfoEntity {
         this.bookedOn = bookedOn;
     }
 
-    public int getBookingId() {
-        return bookingId;
+    public int getid() {
+        return id;
     }
 
-    public void setBookingId(int bookingId) {
-        this.bookingId = bookingId;
+    public void setid(int id) {
+        this.id = id;
     }
 
-    public Date getFromDate() {
+    public LocalDateTime getFromDate() {
         return fromDate;
     }
 
-    public void setFromDate(Date fromDate) {
+    public void setFromDate(LocalDateTime fromDate) {
         this.fromDate = fromDate;
     }
 
-    public Date getToDate() {
+    public LocalDateTime getToDate() {
         return toDate;
     }
 
-    public void setToDate(Date toDate) {
+    public void setToDate(LocalDateTime toDate) {
         this.toDate = toDate;
     }
 
@@ -90,11 +91,11 @@ public class BookingInfoEntity {
         this.numOfRooms = numOfRooms;
     }
 
-    public List<String> getRoomNumbers() {
+    public String getRoomNumbers() {
         return roomNumbers;
     }
 
-    public void setRoomNumbers(List<String> roomNumbers) {
+    public void setRoomNumbers(String roomNumbers) {
         this.roomNumbers = roomNumbers;
     }
 
@@ -114,11 +115,11 @@ public class BookingInfoEntity {
         this.transactionId = transactionId;
     }
 
-    public Date getBookedOn() {
+    public LocalDateTime getBookedOn() {
         return bookedOn;
     }
 
-    public void setBookedOn(Date bookedOn) {
+    public void setBookedOn(LocalDateTime bookedOn) {
         this.bookedOn = bookedOn;
     }
 }
