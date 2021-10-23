@@ -5,6 +5,7 @@ import com.example.BookingService.dto.BookingInfoResponseDto;
 import com.example.BookingService.dto.PaymentDetailsDto;
 import com.example.BookingService.entity.BookingInfoEntity;
 import com.example.BookingService.dao.BookingInfoDao;
+import com.example.BookingService.exception.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Random;
 
 
@@ -34,6 +34,8 @@ public class BookingServiceImpl implements BookingService{
     private int roomPrice;
 
     private int transactionId;
+
+    private String confirmationMessage;
 
     @Override
     public BookingInfoResponseDto acceptBookingDetails(BookingInfoRequestDto bookingInfoRequestDto) {
@@ -87,10 +89,15 @@ public class BookingServiceImpl implements BookingService{
         int days = (int) ChronoUnit.DAYS.between(bookingInfoRequestDto.getFromDate().toLocalDateTime()
                 , bookingInfoRequestDto.getToDate().toLocalDateTime());
 
-        //todo 1: fix this using exception
-        //if toDate is <= fromDate, then calculate roomPrice for 1 day
-        days = (days <= 0) ?  1 :  days;
+        //if fromDate and toDate are same, then calculate roomPrice for 1 day
+        days = (days == 0) ?  1 :  days;
 
+        //if fromDate > toDate, throw exception
+        if(days < 0) {
+            throw new DateIncorrectException();
+        }
+
+        //gets default price for single room from entity (currently 1000) to calculate total room price
         int roomPrice = bookingInfoEntity.getRoomPrice() * days * bookingInfoRequestDto.getNumOfRooms();
 
         return roomPrice;
@@ -99,10 +106,31 @@ public class BookingServiceImpl implements BookingService{
     @Override
     public BookingInfoResponseDto acceptPaymentDetails(int bookingId, PaymentDetailsDto paymentDetailsDto) {
 
-        Optional<BookingInfoEntity> response =
-                bookingInfoDao.findById(paymentDetailsDto.getBookingId());
+        //--------- Exception Handling -----------
+        //Booking id not found
+        BookingInfoEntity bookingInfoEntity = bookingInfoDao.findById(bookingId)
+                .orElseThrow(() -> new InvalidBookingIdException());
 
-        BookingInfoEntity bookingInfoEntity = response.get();
+
+        String paymentMode = paymentDetailsDto.getPaymentMode().toUpperCase();
+
+        //Invalid payment mode entered
+        if(!(paymentMode.equals("CARD") || paymentMode.equals("UPI"))) {
+            throw new InvalidPaymentModeException();
+        }
+
+        //To handle any mismatch in bookingId path variable and paymentDto bookingId request body
+        if(paymentDetailsDto.getBookingId() != bookingId) {
+            throw new BookingIdMismatchException();
+        }
+
+        //Card details or upi id not found respectively
+        if(paymentMode.equals("CARD") && paymentDetailsDto.getCardNumber().equals("")) {
+            throw new CardDetailsNotFoundException();
+        } else if (paymentMode.equals("UPI") && paymentDetailsDto.getUpiId().equals("")) {
+            throw new UpiIdNotFoundException();
+        }
+        //--------- Exception Handling ends here -----------
 
         String url = "http://localhost:8083/payment/transaction";
 
@@ -113,12 +141,12 @@ public class BookingServiceImpl implements BookingService{
         //update transaction id in database
         BookingInfoEntity updatedBookingInfoEntity = bookingInfoDao.save(bookingInfoEntity);
 
-        String message = "Booking confirmed for user with aadhaar number: "
+        confirmationMessage = "Booking confirmed for user with aadhaar number: "
                 + updatedBookingInfoEntity.getAadharNumber()
                 +    "    |    "
                 + "Here are the booking details:    " + updatedBookingInfoEntity.toString();
 
-        System.out.println(message);
+        System.out.println(confirmationMessage);
 
         BookingInfoResponseDto bookingInfoResponseDto = modelMapper.map(
                 updatedBookingInfoEntity, BookingInfoResponseDto.class
