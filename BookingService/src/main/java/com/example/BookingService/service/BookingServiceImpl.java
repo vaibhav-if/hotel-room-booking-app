@@ -1,14 +1,19 @@
 package com.example.BookingService.service;
 
-import com.example.BookingService.dto.BookingInfoDto;
+import com.example.BookingService.dto.BookingInfoRequestDto;
+import com.example.BookingService.dto.BookingInfoResponseDto;
+import com.example.BookingService.dto.PaymentDetailsDto;
 import com.example.BookingService.entity.BookingInfoEntity;
 import com.example.BookingService.dao.BookingInfoDao;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 
 
@@ -16,35 +21,47 @@ import java.util.Random;
 public class BookingServiceImpl implements BookingService{
 
     @Autowired
-    private BookingInfoDao bookingRepository;
+    private BookingInfoDao bookingInfoDao;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    private String roomNumbers;
+
+    private int roomPrice;
+
+    private int transactionId;
 
     @Override
-    public BookingInfoEntity acceptBookingDetails(BookingInfoDto bookingInfoDto) {
+    public BookingInfoResponseDto acceptBookingDetails(BookingInfoRequestDto bookingInfoRequestDto) {
 
         BookingInfoEntity bookingInfoEntity = new BookingInfoEntity();
 
-        String roomNumbers = getRandomNumbers(bookingInfoDto.getNumOfRooms());
+        roomNumbers = getRandomNumbers(bookingInfoRequestDto.getNumOfRooms());
 
-        //get days between fromDate and toDate
-        int days = (int) ChronoUnit.DAYS.between(bookingInfoDto.getFromDate().toLocalDateTime()
-                , bookingInfoDto.getToDate().toLocalDateTime());
-
-        //todo 1: fix this using exception
-        //if toDate is <= fromDate, then calculate roomPrice for 1 day
-        days = (days <= 0) ?  1 :  days;
-
-        int roomPrice = bookingInfoEntity.getRoomPrice() * days * bookingInfoDto.getNumOfRooms();
+        roomPrice = getRoomPrice(bookingInfoRequestDto);
 
         //Convert bookingInfoDto to bookingInfoEntity
-        bookingInfoEntity.setFromDate(bookingInfoDto.getFromDate().toLocalDateTime());
-        bookingInfoEntity.setToDate(bookingInfoDto.getToDate().toLocalDateTime());
-        bookingInfoEntity.setAadharNumber(bookingInfoDto.getAadharNumber());
-        bookingInfoEntity.setNumOfRooms(bookingInfoDto.getNumOfRooms());
+        bookingInfoEntity.setFromDate(bookingInfoRequestDto.getFromDate().toLocalDateTime());
+        bookingInfoEntity.setToDate(bookingInfoRequestDto.getToDate().toLocalDateTime());
+        bookingInfoEntity.setAadharNumber(bookingInfoRequestDto.getAadharNumber());
+        bookingInfoEntity.setNumOfRooms(bookingInfoRequestDto.getNumOfRooms());
+
+        //Add additional info to entity
         bookingInfoEntity.setRoomNumbers(roomNumbers);
         bookingInfoEntity.setRoomPrice(roomPrice);
         bookingInfoEntity.setBookedOn(LocalDateTime.now());
 
-        return bookingRepository.save(bookingInfoEntity);
+        BookingInfoEntity response =  bookingInfoDao.save(bookingInfoEntity);
+
+        BookingInfoResponseDto bookingInfoResponseDto = modelMapper.map(
+                response, BookingInfoResponseDto.class
+        );
+
+        return bookingInfoResponseDto;
     }
 
     //Helper function for generating random room numbers between 1 and 100
@@ -61,8 +78,42 @@ public class BookingServiceImpl implements BookingService{
         return listString;
     }
 
+    //Helper function to calculate room price
+    private int getRoomPrice(BookingInfoRequestDto bookingInfoRequestDto) {
+
+        BookingInfoEntity bookingInfoEntity = new BookingInfoEntity();
+
+        //get days between fromDate and toDate
+        int days = (int) ChronoUnit.DAYS.between(bookingInfoRequestDto.getFromDate().toLocalDateTime()
+                , bookingInfoRequestDto.getToDate().toLocalDateTime());
+
+        //todo 1: fix this using exception
+        //if toDate is <= fromDate, then calculate roomPrice for 1 day
+        days = (days <= 0) ?  1 :  days;
+
+        int roomPrice = bookingInfoEntity.getRoomPrice() * days * bookingInfoRequestDto.getNumOfRooms();
+
+        return roomPrice;
+    }
+
     @Override
-    public BookingInfoEntity acceptPaymentDetails(BookingInfoDto bookingInfoDto) {
-        return null;
+    public BookingInfoResponseDto acceptPaymentDetails(int bookingId, PaymentDetailsDto paymentDetailsDto) {
+
+        Optional<BookingInfoEntity> response =
+                bookingInfoDao.findById(paymentDetailsDto.getBookingId());
+
+        BookingInfoEntity bookingInfoEntity = response.get();
+
+        String url = "http://localhost:8083/payment/transaction";
+
+        transactionId = restTemplate.postForObject(url, paymentDetailsDto, Integer.class);
+
+        bookingInfoEntity.setTransactionId(transactionId);
+
+        BookingInfoResponseDto bookingInfoResponseDto = modelMapper.map(
+                bookingInfoEntity, BookingInfoResponseDto.class
+        );
+
+        return bookingInfoResponseDto;
     }
 }

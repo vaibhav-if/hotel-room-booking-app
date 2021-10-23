@@ -2,7 +2,7 @@ package com.example.BookingService.dto;
 
 import java.sql.Timestamp;
 
-public class BookingInfoDto {
+public class BookingInfoRequestDto {
 
     private Timestamp fromDate;
 
@@ -12,11 +12,11 @@ public class BookingInfoDto {
 
     private int numOfRooms;
 
-    public BookingInfoDto() {
+    public BookingInfoRequestDto() {
 
     }
 
-    public BookingInfoDto(Timestamp fromDate, Timestamp toDate, String aadharNumber, int numOfRooms) {
+    public BookingInfoRequestDto(Timestamp fromDate, Timestamp toDate, String aadharNumber, int numOfRooms) {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.aadharNumber = aadharNumber;

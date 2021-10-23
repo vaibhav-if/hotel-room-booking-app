@@ -1,11 +1,12 @@
 package com.example.BookingService.service;
 
-import com.example.BookingService.dto.BookingInfoDto;
-import com.example.BookingService.entity.BookingInfoEntity;
+import com.example.BookingService.dto.BookingInfoRequestDto;
+import com.example.BookingService.dto.BookingInfoResponseDto;
+import com.example.BookingService.dto.PaymentDetailsDto;
 
 public interface BookingService {
 
-    public BookingInfoEntity acceptBookingDetails(BookingInfoDto bookingInfoDto);
+    public BookingInfoResponseDto acceptBookingDetails(BookingInfoRequestDto bookingInfoRequestDto);
 
-    public BookingInfoEntity acceptPaymentDetails(BookingInfoDto bookingInfoDto);
+    public BookingInfoResponseDto acceptPaymentDetails(int bookingId, PaymentDetailsDto paymentDetailsDto);
 }
