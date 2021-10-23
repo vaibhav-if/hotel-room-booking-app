@@ -110,15 +110,18 @@ public class BookingServiceImpl implements BookingService{
 
         bookingInfoEntity.setTransactionId(transactionId);
 
+        //update transaction id in database
+        BookingInfoEntity updatedBookingInfoEntity = bookingInfoDao.save(bookingInfoEntity);
+
         String message = "Booking confirmed for user with aadhaar number: "
-                + bookingInfoEntity.getAadharNumber()
+                + updatedBookingInfoEntity.getAadharNumber()
                 +    "    |    "
-                + "Here are the booking details:    " + bookingInfoEntity.toString();
+                + "Here are the booking details:    " + updatedBookingInfoEntity.toString();
 
         System.out.println(message);
 
         BookingInfoResponseDto bookingInfoResponseDto = modelMapper.map(
-                bookingInfoEntity, BookingInfoResponseDto.class
+                updatedBookingInfoEntity, BookingInfoResponseDto.class
         );
 
         return bookingInfoResponseDto;

@@ -3,7 +3,7 @@ package com.example.PaymentService.dto;
 
 public class TransactionDetailsDto {
 
-    //represents transactionId from entity
+    //represents transactionId
     private int id;
 
     private String paymentMode;
@@ -12,7 +12,7 @@ public class TransactionDetailsDto {
 
     private String upiId;
 
-    private String CardNumber;
+    private String cardNumber;
 
     public TransactionDetailsDto() {}
 
@@ -21,7 +21,7 @@ public class TransactionDetailsDto {
         this.paymentMode = paymentMode;
         this.bookingId = bookingId;
         this.upiId = upiId;
-        CardNumber = cardNumber;
+        this.cardNumber = cardNumber;
     }
 
     public int getId() {
@@ -57,11 +57,11 @@ public class TransactionDetailsDto {
     }
 
     public String getCardNumber() {
-        return CardNumber;
+        return cardNumber;
     }
 
     public void setCardNumber(String cardNumber) {
-        CardNumber = cardNumber;
+        this.cardNumber = cardNumber;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class TransactionDetailsDto {
                 ", paymentMode='" + paymentMode + '\'' +
                 ", bookingId=" + bookingId +
                 ", upiId='" + upiId + '\'' +
-                ", CardNumber='" + CardNumber + '\'' +
+                ", cardNumber='" + cardNumber + '\'' +
                 '}';
     }
 }

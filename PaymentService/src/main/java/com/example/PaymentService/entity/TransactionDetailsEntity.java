@@ -20,7 +20,7 @@ public class TransactionDetailsEntity {
     private String upiId;
 
     @Column(nullable = true)
-    private String CardNumber;
+    private String cardNumber;
 
     public TransactionDetailsEntity() {}
 
@@ -29,7 +29,7 @@ public class TransactionDetailsEntity {
         this.paymentMode = paymentMode;
         this.bookingId = bookingId;
         this.upiId = upiId;
-        CardNumber = cardNumber;
+        this.cardNumber = cardNumber;
     }
 
     public int getId() {
@@ -65,11 +65,11 @@ public class TransactionDetailsEntity {
     }
 
     public String getCardNumber() {
-        return CardNumber;
+        return cardNumber;
     }
 
     public void setCardNumber(String cardNumber) {
-        CardNumber = cardNumber;
+        this.cardNumber = cardNumber;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class TransactionDetailsEntity {
                 ", paymentMode='" + paymentMode + '\'' +
                 ", bookingId=" + bookingId +
                 ", upiId='" + upiId + '\'' +
-                ", CardNumber='" + CardNumber + '\'' +
+                ", cardNumber='" + cardNumber + '\'' +
                 '}';
     }
 }
