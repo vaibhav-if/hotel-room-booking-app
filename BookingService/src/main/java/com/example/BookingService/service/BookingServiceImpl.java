@@ -110,6 +110,13 @@ public class BookingServiceImpl implements BookingService{
 
         bookingInfoEntity.setTransactionId(transactionId);
 
+        String message = "Booking confirmed for user with aadhaar number: "
+                + bookingInfoEntity.getAadharNumber()
+                +    "    |    "
+                + "Here are the booking details:    " + bookingInfoEntity.toString();
+
+        System.out.println(message);
+
         BookingInfoResponseDto bookingInfoResponseDto = modelMapper.map(
                 bookingInfoEntity, BookingInfoResponseDto.class
         );

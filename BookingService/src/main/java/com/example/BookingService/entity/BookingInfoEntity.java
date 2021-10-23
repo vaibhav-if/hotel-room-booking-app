@@ -122,4 +122,17 @@ public class BookingInfoEntity {
     public void setBookedOn(LocalDateTime bookedOn) {
         this.bookedOn = bookedOn;
     }
+
+    @Override
+    public String toString() {
+        return  "bookingId=" + id +
+                ", fromDate=" + fromDate +
+                ", toDate=" + toDate +
+                ", aadharNumber='" + aadharNumber + '\'' +
+                ", numOfRooms=" + numOfRooms +
+                ", roomNumbers='" + roomNumbers + '\'' +
+                ", roomPrice=" + roomPrice +
+                ", transactionId=" + transactionId +
+                ", bookedOn=" + bookedOn ;
+    }
 }
