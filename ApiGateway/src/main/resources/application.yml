@@ -10,12 +10,12 @@ spring:
     gateway:
       routes:
         - id: BOOKING-SERVICE
-          uri: lb://booking-service
+          uri: lb://BOOKING-SERVICE
           predicates:
             - Path=/hotel/**
 
-        - id: payment-service
-          uri: lb://payment-service
+        - id: PAYMENT-SERVICE
+          uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/payment/**
 

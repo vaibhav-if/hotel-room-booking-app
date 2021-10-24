@@ -8,6 +8,7 @@ import com.example.BookingService.dao.BookingInfoDao;
 import com.example.BookingService.exception.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,6 +37,9 @@ public class BookingServiceImpl implements BookingService{
     private int transactionId;
 
     private String confirmationMessage;
+
+    @Value("${transactionApp.url}")
+    private String transactionUrl;
 
     @Override
     public BookingInfoResponseDto acceptBookingDetails(BookingInfoRequestDto bookingInfoRequestDto) {
@@ -132,9 +136,9 @@ public class BookingServiceImpl implements BookingService{
         }
         //--------- Exception Handling ends here -----------
 
-        String url = "http://localhost:8083/payment/transaction";
+//        String url = "http://localhost:9191/payment/transaction";
 
-        transactionId = restTemplate.postForObject(url, paymentDetailsDto, Integer.class);
+        transactionId = restTemplate.postForObject(transactionUrl, paymentDetailsDto, Integer.class);
 
         bookingInfoEntity.setTransactionId(transactionId);
 
