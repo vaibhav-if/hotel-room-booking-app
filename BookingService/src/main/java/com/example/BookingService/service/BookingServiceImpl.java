@@ -134,6 +134,11 @@ public class BookingServiceImpl implements BookingService{
         } else if (paymentMode.equals("UPI") && paymentDetailsDto.getUpiId().equals("")) {
             throw new UpiIdNotFoundException();
         }
+
+        //If Transaction id already exists i.e. payment details already accepted for that booking id
+        if(bookingInfoEntity.getTransactionId() != 0) {
+            throw new TransactionIdExistsException();
+        }
         //--------- Exception Handling ends here -----------
 
 //        String url = "http://localhost:9191/payment/transaction";

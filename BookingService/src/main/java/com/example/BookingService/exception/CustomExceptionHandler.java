@@ -65,4 +65,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(TransactionIdExistsException.class)
+    public ResponseEntity handleTransactionIdExistsException() {
+        Map<String, Object> error = new LinkedHashMap<>();
+        error.put("message", "Transaction Id already exists for this booking");
+        error.put("statusCode", 400);
+
+        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+    }
 }
