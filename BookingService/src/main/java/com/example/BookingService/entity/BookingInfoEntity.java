@@ -18,7 +18,6 @@ public class BookingInfoEntity {
     @Column(nullable = true)
     private LocalDateTime toDate;
 
-    //todo 2: to keep aadhaar unique or not?
     @Column(nullable = true)
     private String aadharNumber;
 

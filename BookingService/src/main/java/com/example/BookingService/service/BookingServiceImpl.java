@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Random;
@@ -51,8 +52,12 @@ public class BookingServiceImpl implements BookingService{
         roomPrice = getRoomPrice(bookingInfoRequestDto);
 
         //Convert bookingInfoDto to bookingInfoEntity
-        bookingInfoEntity.setFromDate(bookingInfoRequestDto.getFromDate().toLocalDateTime());
-        bookingInfoEntity.setToDate(bookingInfoRequestDto.getToDate().toLocalDateTime());
+        bookingInfoEntity.setFromDate(bookingInfoRequestDto.getFromDate()
+                .toInstant().atZone(ZoneId.of("UTC")).toLocalDateTime());
+
+        bookingInfoEntity.setToDate(bookingInfoRequestDto.getToDate()
+                .toInstant().atZone(ZoneId.of("UTC")).toLocalDateTime());
+
         bookingInfoEntity.setAadharNumber(bookingInfoRequestDto.getAadharNumber());
         bookingInfoEntity.setNumOfRooms(bookingInfoRequestDto.getNumOfRooms());
 
@@ -77,7 +82,7 @@ public class BookingServiceImpl implements BookingService{
         ArrayList<String> numberList = new ArrayList<String>();
 
         for (int i = 0; i < count; i++){
-            numberList.add(String.valueOf(rand.nextInt(upperBound)));
+            numberList.add(String.valueOf(rand.nextInt(upperBound) + 1));
         }
 
         String listString = String.join(", ", numberList);
@@ -141,7 +146,6 @@ public class BookingServiceImpl implements BookingService{
         }
         //--------- Exception Handling ends here -----------
 
-//        String url = "http://localhost:9191/payment/transaction";
 
         transactionId = restTemplate.postForObject(transactionUrl, paymentDetailsDto, Integer.class);
 

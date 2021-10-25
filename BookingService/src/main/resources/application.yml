@@ -1,3 +1,10 @@
+spring:
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+      discovery:
+        enabled: true
 
 eureka:
   client:

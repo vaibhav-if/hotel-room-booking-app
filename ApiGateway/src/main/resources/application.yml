@@ -5,6 +5,9 @@ spring:
   application:
     name: API-GATEWAY
   cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
     discovery:
       enabled: true
     gateway:
